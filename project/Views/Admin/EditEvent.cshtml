@@ -1,0 +1,169 @@
+﻿@model project.Models.Event
+
+@{
+    ViewBag.Title = "تعديل الفعالية";
+}
+
+<link href="~/dist/css/site.css" rel="stylesheet" />
+
+<style>
+    .form-control:focus, .form-select:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 .15rem rgba(255,193,7,.35);
+    }
+
+    .btn-warning:hover {
+        transform: translateY(-1px);
+        transition: .2s;
+    }
+</style>
+
+<div class="container mt-5" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-md-9 col-lg-8">
+
+            <div class="card shadow-lg border-0 rounded-3">
+
+                <!-- Header (مشترك) -->
+                <div class="card-header bg-warning text-dark py-3 text-center fw-bold">
+                    <i class="fas fa-edit me-2"></i>
+                    تعديل الفعالية
+                </div>
+
+                <div class="card-body p-4 bg-light">
+
+                    <!-- Form -->
+                    <form asp-action="EditEvent" method="post" id="eventForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <!-- Title (View1 + View2) -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">عنوان الفعالية</label>
+
+                            <!-- input-group من View1 -->
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-heading"></i>
+                                </span>
+                                <input asp-for="Title" class="form-control" />
+                            </div>
+
+                            <!-- Validation (كلاهما) -->
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">الوصف</label>
+
+                            <!-- rows 4 من View2 + موجودة View1 -->
+                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Date & Time -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">التاريخ</label>
+                                <input asp-for="Date" type="date" class="form-control" />
+                                <span asp-validation-for="Date" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">الوقت</label>
+                                <input asp-for="StartTime" type="time" class="form-control" />
+                                <span asp-validation-for="StartTime" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Location & Major -->
+                        <div class="row">
+
+                            <!-- Location -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">المكان</label>
+                                <input asp-for="Location" class="form-control" />
+                                <span asp-validation-for="Location" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Major (input + select معًا بدون حذف) -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">التخصص</label>
+
+                                <select asp-for="major" class="form-select">
+                                    <option value="">-- اختر التخصص --</option>
+                                    <option>تقنية معلومات</option>
+                                    <option>هندسة</option>
+                                    <option>إدارة أعمال</option>
+                                    <option>علوم</option>
+                                </select>
+
+                                <span asp-validation-for="major" class="text-danger small"></span>
+                            </div>
+
+
+                        </div>
+
+                        <!-- Capacity -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">الحد الأعلى للمقاعد</label>
+                            <input asp-for="Limit" type="number" class="form-control" />
+                            <span asp-validation-for="Limit" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Preview (من View1 بالكامل) -->
+                        <div class="card border-warning mb-4">
+                            <div class="card-header bg-warning text-dark fw-bold">
+                                <i class="fas fa-eye me-2"></i>
+                                معاينة بطاقة الفعالية
+                            </div>
+                            <div class="card-body small">
+                                <div><strong>@Model.Title</strong></div>
+                                <div>@Model.Description</div>
+                                <div>@Model.Location</div>
+                                <div>@Model.Date.ToString("yyyy-MM-dd") – @Model.StartTime</div>
+                                <div>السعة: @Model.Limit</div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons (كلا الطريقتين) -->
+                        <div class="d-flex justify-content-between flex-wrap gap-2">
+
+                            <!-- رجوع / إلغاء -->
+                            <a asp-action="Dashboard" class="btn btn-secondary px-4">
+                                رجوع
+                            </a>
+
+                            <div class="d-flex gap-2">
+                                <a asp-action="Dashboard" class="btn btn-secondary px-4">
+                                    إلغاء
+                                </a>
+
+                                <button type="submit" id="submitBtn"
+                                        class="btn btn-warning px-5 fw-bold shadow-sm">
+                                    <i class="fas fa-save me-1"></i>
+                                    حفظ التعديلات
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("eventForm").addEventListener("submit", function () {
+            const btn = document.getElementById("submitBtn");
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> جاري الحفظ...';
+        });
+    </script>
+}

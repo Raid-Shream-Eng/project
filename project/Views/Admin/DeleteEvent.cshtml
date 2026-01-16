@@ -1,0 +1,82 @@
+﻿@model project.Models.Event
+
+@{
+    ViewBag.Title = "تأكيد حذف الفعالية";
+}
+
+<link href="~/dist/css/site.css" rel="stylesheet" />
+
+<div class="container mt-5" dir="rtl">
+    <div class="row justify-content-center">
+
+        <!-- ===== Card Wrapper (View1 + View2) ===== -->
+        <div class="col-md-7 col-lg-6">
+
+            <div class="card shadow-lg border-0 rounded-3">
+
+                <!-- ===== Header (Merged) ===== -->
+                <div class="card-header bg-danger text-white py-3 text-center fw-bold">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    تأكيد حذف الفعالية
+                </div>
+
+                <div class="card-body p-4 text-center bg-light">
+
+                    <!-- ===== Main Warning (View1 + View2) ===== -->
+                    <h5 class="mb-3 text-danger fw-bold">
+                        هل أنت متأكد من رغبتك في حذف هذه الفعالية؟
+                    </h5>
+
+                    <!-- ===== Event Info (FULL from View1 + View2) ===== -->
+                    <div class="alert alert-warning text-start rounded-3 mb-3">
+
+                        <!-- View2 (Title + Date Highlight) -->
+                        <h4 class="text-danger fw-bold text-center mb-2">
+                            @Model.Title
+                        </h4>
+                        <p class="text-muted text-center mb-3">
+                            @Model.Date.ToString("yyyy-MM-dd")
+                        </p>
+
+                        <!-- View1 (Full Details) -->
+                        <div><strong>العنوان:</strong> @Model.Title</div>
+                        <div><strong>التاريخ:</strong> @Model.Date.ToString("yyyy-MM-dd")</div>
+                        <div><strong>الوقت:</strong> @Model.StartTime</div>
+                        <div><strong>المكان:</strong> @Model.Location</div>
+                        <div><strong>السعة:</strong> @Model.Limit</div>
+                    </div>
+
+                    <!-- ===== Warnings (View1 + View2) ===== -->
+                    <p class="text-danger small mt-3">
+                        ⚠️ لا يمكن التراجع عن هذا الإجراء، وسيتم حذف جميع الحجوزات المرتبطة بهذه الفعالية.
+                    </p>
+
+
+                    <!-- ===== Actions (Merged Forms) ===== -->
+                    <form asp-action="DeleteEvent" method="post" class="mt-4">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-center">
+
+                            <!-- Back (View1 + View2) -->
+                            <a asp-action="Dashboard" class="btn btn-secondary px-4">
+                                <i class="fas fa-arrow-right me-1"></i>
+                                تراجع
+                            </a>
+
+                            <!-- Confirm Delete (View1 + View2) -->
+                            <button type="submit" class="btn btn-danger px-5 fw-bold">
+                                <i class="fas fa-trash me-1"></i>
+                                نعم، احذف الفعالية
+                            </button>
+
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

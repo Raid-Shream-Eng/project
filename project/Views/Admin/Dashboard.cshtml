@@ -1,0 +1,222 @@
+﻿@model List<project.Models.Event>
+
+@{
+    Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+    Context.Response.Headers["Pragma"] = "no-cache";
+    Context.Response.Headers["Expires"] = "0";
+    ViewBag.Title = "لوحة التحكم";
+}
+
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" />
+<link href="~/dist/css/site.css" rel="stylesheet" />
+
+<style>
+    body {
+        direction: rtl;
+        text-align: right;
+    }
+
+    .card-title,
+    .card-header,
+    .card-body,
+    .card-footer,
+    h1, h2, h3, h4, h5, h6, p {
+        text-align: right;
+    }
+
+    .card {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .d-flex.justify-content-between {
+        flex-direction: row-reverse;
+    }
+
+    .card-tools {
+        float: left;
+    }
+</style>
+
+<div class="container py-5">
+
+    <!-- ===== Header (View1) ===== -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">
+                <i class="fas fa-tachometer-alt text-success me-2"></i>
+                لوحة التحكم
+            </h2>
+            <p class="text-muted mb-0">نظرة عامة وإدارة الفعاليات</p>
+        </div>
+
+        <a asp-action="CreateEvent" class="btn btn-success">
+            <i class="fas fa-plus-circle me-2"></i>
+            إضافة فعالية
+        </a>
+    </div>
+
+    <!-- ===== Stats (View1 + View2) ===== -->
+    <div class="row g-3 mb-5">
+
+        <div class="col-md-3">
+            <div class="card bg-primary text-white shadow-sm h-100">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h2 class="fw-bold mb-0">@ViewBag.StudentCount</h2>
+                    <div class="text-start">
+                        <i class="fas fa-user-graduate fa-2x mb-2"></i>
+                        <h6 class="mb-0 opacity-75">عدد الطلاب</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-success text-white shadow-sm h-100">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h2 class="fw-bold mb-0">@ViewBag.EventCount</h2>
+                    <div class="text-start">
+                        <i class="fas fa-calendar-check fa-2x mb-2"></i>
+                        <h6 class="mb-0 opacity-75">الفعاليات</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-warning shadow-sm h-100">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h2 class="fw-bold mb-0">@ViewBag.ActiveBookings</h2>
+                    <div class="text-start">
+                        <i class="fas fa-ticket-alt fa-2x mb-2"></i>
+                        <h6 class="mb-0 opacity-75">حجوزات نشطة</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-info text-white shadow-sm h-100">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h2 class="fw-bold mb-0">@ViewBag.TotalCapacity</h2>
+                    <div class="text-start">
+                        <i class="fas fa-users fa-2x mb-2"></i>
+                        <h6 class="mb-0 opacity-75">السعة الكلية</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== Chart (View2) ===== -->
+     <div class="card card-success mb-5">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-chart-bar me-2"></i>
+                عدد الفعاليات شهريًا
+            </h3>
+
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <canvas id="barChart"
+                    style="min-height:10px;height:150px;max-height:200px;max-width:100%;">
+            </canvas>
+        </div>
+    </div> 
+
+    <!-- ===== Events (Merged Actions) ===== -->
+    <h5 class="text-muted mb-3">
+        <i class="fas fa-list me-2"></i>
+        قائمة الفعاليات
+    </h5>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+
+        @foreach (var ev in Model)
+        {
+            bool isPast = (ev.Date.Date + ev.StartTime) < DateTime.Now;
+            string headerClass = isPast ? "bg-secondary" : "bg-success";
+
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+
+                    <div class="card-header text-white @headerClass d-flex justify-content-between">
+                        <span class="fw-bold">@ev.Title</span>
+                        @if (isPast)
+                        {
+                            <span class="badge bg-dark">منتهية</span>
+                        }
+                    </div>
+
+                    <div class="card-body small">
+                        <p>@ev.Description</p>
+                        <div><i class="far fa-calendar"></i> @ev.Date.ToString("yyyy-MM-dd")</div>
+                        <div><i class="far fa-clock"></i> @ev.StartTime.ToString(@"hh\:mm")</div>
+                        <div><i class="fas fa-map-marker-alt"></i> @ev.Location</div>
+                        <div><i class="fas fa-chair"></i> السعة: @ev.Limit</div>
+                    </div>
+
+                    <div class="card-footer bg-white border-0 d-flex flex-column gap-2">
+
+                        <!-- View1 -->
+                        <a asp-action="ViewStudents" asp-route-id="@ev.Id"
+                           class="btn btn-sm btn-primary">
+                            <i class="fas fa-users-cog me-1"></i>
+                            إدارة المسجلين
+                        </a>
+
+                        <!-- View1 + View2 -->
+                        <div class="d-flex gap-2">
+                            <a asp-action="EditEvent" asp-route-id="@ev.Id"
+                               class="btn btn-sm btn-warning flex-fill">
+                                تعديل
+                            </a>
+
+                            <a asp-action="DeleteEvent" asp-route-id="@ev.Id"
+                               class="btn btn-sm btn-danger flex-fill">
+                                حذف
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(Json.Serialize(ViewBag.MonthLabels)),
+            datasets: [{
+                data: @Html.Raw(Json.Serialize(ViewBag.MonthCounts)),
+                label: 'عدد الفعاليات'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { precision: 0 } }
+            }
+        }
+    });
+</script>

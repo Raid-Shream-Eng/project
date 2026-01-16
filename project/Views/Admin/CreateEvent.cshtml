@@ -1,0 +1,187 @@
+﻿@model project.Models.Event
+
+@{
+    ViewBag.Title = "إضافة فعالية جديدة";
+    Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+    Context.Response.Headers["Pragma"] = "no-cache";
+    Context.Response.Headers["Expires"] = "0";
+}
+
+<link href="~/dist/css/site.css" rel="stylesheet" />
+
+<style>
+    .form-control:focus, .form-select:focus {
+        border-color: #198754;
+        box-shadow: 0 0 0 .15rem rgba(25,135,84,.25);
+    }
+
+    .btn-success:hover {
+        transform: translateY(-1px);
+        transition: 0.2s;
+    }
+</style>
+
+<div class="container mt-5" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-md-9">
+
+            <div class="card shadow-lg border-0 rounded-3">
+
+                <!-- Header -->
+                <div class="card-header bg-success text-white text-center fw-bold py-3">
+                    <i class="fas fa-calendar-plus me-2"></i> إضافة فعالية جديدة
+                </div>
+
+                <div class="card-body bg-light p-4">
+
+                    <form asp-action="CreateEvent" method="post" id="eventForm">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Title -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">عنوان الفعالية</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-heading"></i></span>
+                                <input asp-for="Title" class="form-control form-control-lg" />
+                            </div>
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">الوصف</label>
+                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Date & Time -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">التاريخ</label>
+                                <input asp-for="Date" type="date" class="form-control" />
+                                <span asp-validation-for="Date" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">الوقت</label>
+                                <input asp-for="StartTime" type="time" class="form-control" />
+                                <span asp-validation-for="StartTime" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Location & Major -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">المكان</label>
+                                <input asp-for="Location" class="form-control" />
+                                <span asp-validation-for="Location" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">التخصص</label>
+                                <select asp-for="major" class="form-select">
+                                    <option value="">-- اختر التخصص --</option>
+                                    <option>تقنية معلومات</option>
+                                    <option>هندسة</option>
+                                    <option>إدارة أعمال</option>
+                                    <option>علوم</option>
+                                    <option>كلية العلوم</option>
+                                </select>
+                                <span asp-validation-for="major" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Capacity -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">الحد الأعلى للمقاعد</label>
+                            <input asp-for="Limit" type="number" class="form-control" />
+                            <span asp-validation-for="Limit" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Preview (من View1 كما هو) -->
+                        <div id="previewCard" class="card border-secondary mb-4">
+                            <div id="previewHeader" class="card-header bg-secondary text-white">
+                                <i class="fas fa-hourglass-half me-2"></i> غير مكتمل
+                            </div>
+                            <div class="card-body small bg-white">
+                                <div><strong>العنوان:</strong> <span id="pTitle">—</span></div>
+                                <div><strong>الوصف:</strong> <span id="pDescription">—</span></div>
+                                <div><strong>المكان:</strong> <span id="pLocation">—</span></div>
+                                <div><strong>التاريخ:</strong> <span id="pDate">—</span></div>
+                                <div><strong>الوقت:</strong> <span id="pTime">—</span></div>
+                                <div><strong>السعة:</strong> <span id="pLimit">—</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons (من الاثنين) -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a asp-action="Dashboard" asp-controller="Admin" class="btn btn-secondary px-4">
+                                <i class="fas fa-arrow-right"></i> رجوع
+                            </a>
+
+                            <button type="submit" id="submitBtn" class="btn btn-success px-5 fw-bold shadow-sm" disabled>
+                                <i class="fas fa-save"></i> حفظ
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function bind(name, id) {
+            const el = document.querySelector(`[name="${name}"]`);
+            if (!el) return;
+            el.addEventListener("input", e =>
+                document.getElementById(id).innerText = e.target.value || "—");
+        }
+
+        bind("Title", "pTitle");
+        bind("Description", "pDescription");
+        bind("Location", "pLocation");
+        bind("Limit", "pLimit");
+
+        document.querySelector('[name="Date"]')
+            ?.addEventListener("change", e =>
+                document.getElementById("pDate").innerText = e.target.value || "—");
+
+        document.querySelector('[name="StartTime"]')
+            ?.addEventListener("change", e =>
+                document.getElementById("pTime").innerText = e.target.value || "—");
+
+        document.getElementById("eventForm").addEventListener("input", () => {
+            const required = ["Title", "Description", "Date", "StartTime", "Location", "Limit", "major"];
+            const complete = required.every(n =>
+                document.querySelector(`[name="${n}"]`)?.value);
+
+            const header = document.getElementById("previewHeader");
+            const card = document.getElementById("previewCard");
+            const btn = document.getElementById("submitBtn");
+
+            if (complete) {
+                header.className = "card-header bg-success text-white";
+                header.innerHTML = '<i class="fas fa-check-circle me-2"></i> جاهز للحفظ';
+                card.className = "card border-success mb-4";
+                btn.disabled = false;
+            } else {
+                header.className = "card-header bg-secondary text-white";
+                header.innerHTML = '<i class="fas fa-hourglass-half me-2"></i> غير مكتمل';
+                card.className = "card border-secondary mb-4";
+                btn.disabled = true;
+            }
+        });
+
+        document.getElementById("eventForm").addEventListener("submit", () => {
+            const btn = document.getElementById("submitBtn");
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+        });
+    </script>
+}

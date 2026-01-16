@@ -1,0 +1,176 @@
+﻿@model project.Models.Event
+
+@{
+    ViewData["Title"] = "تفاصيل الفعالية";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string userStatus = ViewBag.UserStatus as string;
+    int currentCount = ViewBag.CurrentCount ?? 0;
+}
+
+<link href="~/dist/css/site.css" rel="stylesheet" />
+
+<style>
+    .event-page {
+        direction: rtl;
+        text-align: right;
+    }
+
+    .event-card {
+        transition: all .25s ease;
+    }
+
+        .event-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(0,0,0,.15);
+        }
+
+    .event-icon {
+        font-size: 42px;
+        color: #178957;
+    }
+</style>
+
+<div class="container py-5 event-page">
+
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            <div class="card shadow-lg border-0 rounded-3 event-card">
+
+                <!-- Header -->
+                <div class="card-header bg-success text-white text-center py-3">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="fas fa-calendar-check me-2"></i>
+                        تفاصيل الفعالية
+                    </h3>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <!-- Title -->
+                    <div class="text-center mb-4">
+                        <i class="fas fa-calendar-alt event-icon"></i>
+                        <h2 class="fw-bold mt-3">@Model.Title</h2>
+                    </div>
+
+                    @if (TempData["msg"] != null)
+                    {
+                        <div class="alert alert-info text-center">
+                            @TempData["msg"]
+                        </div>
+                    }
+
+                    <hr />
+
+                    <!-- Info -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p>
+                                <i class="far fa-calendar text-success me-1"></i>
+                                <strong>التاريخ:</strong>
+                                @Model.Date.ToString("yyyy-MM-dd")
+                            </p>
+
+                            <p>
+                                <i class="far fa-clock text-primary me-1"></i>
+                                <strong>الوقت:</strong>
+                                @Model.StartTime
+                            </p>
+
+                            <p>
+                                <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                                <strong>المكان:</strong>
+                                @Model.Location
+                            </p>
+
+                            <p>
+                                <i class="fas fa-users text-secondary me-1"></i>
+                                <strong>المقاعد:</strong>
+                                @currentCount / @Model.Limit
+                            </p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5 class="fw-bold mb-2">الوصف:</h5>
+                            <p class="text-muted">@Model.Description</p>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <!-- Booking Status -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+                        <a asp-action="EventsList" class="btn btn-secondary px-4">
+                            <i class="fas fa-arrow-right me-1"></i>
+                            العودة للفعاليات
+                        </a>
+
+                        <div class="d-flex gap-2 flex-wrap">
+
+                            @if (!string.IsNullOrEmpty(userStatus))
+                            {
+                                if (userStatus == "active")
+                                {
+                                    <button class="btn btn-success disabled opacity-100">
+                                        <i class="fas fa-check-circle me-1"></i>
+                                        تم تأكيد حجزك
+                                    </button>
+                                }
+                                else if (userStatus == "waiting")
+                                {
+                                    <button class="btn btn-warning disabled opacity-100 text-dark">
+                                        <i class="fas fa-hourglass-half me-1"></i>
+                                        أنت في قائمة الانتظار
+                                    </button>
+                                }
+
+                                <a asp-action="CancelBooking"
+                                   asp-route-eventId="@Model.Id"
+                                   class="btn btn-outline-danger"
+                                   onclick="return confirm('هل أنت متأكد من إلغاء الحجز/الانتظار؟')">
+                                    <i class="fas fa-times me-1"></i>
+                                    انسحاب
+                                </a>
+                            }
+                            else
+                            {
+                                <form asp-action="BookEvent" method="post" class="d-inline">
+                                    <input type="hidden" name="eventId" value="@Model.Id" />
+
+                                    @if (currentCount >= Model.Limit)
+                                    {
+                                        <button type="submit" class="btn btn-warning text-dark fw-bold">
+                                            <i class="fas fa-clock me-1"></i>
+                                            انضم لقائمة الانتظار
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn glow-btn">
+                                            <i class="fas fa-ticket-alt me-1"></i>
+                                            تأكيد الحجز
+                                        </button>
+                                    }
+                                </form>
+                            }
+
+                        </div>
+                    </div>
+
+                    @if (ViewBag.Success != null)
+                    {
+                        <div class="alert alert-success mt-4 text-center">
+                            @ViewBag.Success
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

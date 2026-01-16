@@ -1,0 +1,150 @@
+﻿@model IEnumerable<project.Models.Roll>
+
+@{
+    ViewData["Title"] = "حجوزاتي";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/dist/css/site.css" rel="stylesheet" />
+
+<style>
+    .bookings-page {
+        direction: rtl;
+        text-align: right;
+    }
+
+    .date-box {
+        width: 100px;
+        color: #fff;
+        border-radius: 8px 0 0 8px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .day {
+        font-size: 2.2rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .month {
+        font-size: 1.1rem;
+        text-transform: uppercase;
+    }
+
+    .ticket-card {
+        border: none;
+        border-radius: 14px;
+        transition: box-shadow .25s ease, transform .25s ease;
+    }
+
+        .ticket-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0,0,0,.08);
+        }
+
+    .opacity-cancelled {
+        opacity: .7;
+    }
+</style>
+
+<div class="container mt-5 bookings-page">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1">
+                <i class="fas fa-ticket-alt text-success"></i>
+                تذاكري وحجوزاتي
+            </h3>
+            <p class="text-muted mb-0">الفعاليات التي قمت بالتسجيل بها</p>
+        </div>
+
+        <a asp-action="EventsList" class="btn btn-success rounded-pill px-4">
+            <i class="fas fa-plus me-1"></i>
+            حجز فعالية
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+                <i class="far fa-calendar-times fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">لا يوجد حجوزات حتى الآن</h5>
+                <a asp-action="EventsList" class="btn btn-outline-success mt-3 rounded-pill px-4">
+                    تصفح الفعاليات
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                bool isActive = item.States == "active";
+
+                string statusBg = isActive ? "bg-success" : "bg-danger";
+                string statusText = isActive ? "حجز مؤكد" : "تم الإلغاء";
+                string badgeTextColor = isActive ? "text-success" : "text-danger";
+                string opacityClass = isActive ? "" : "opacity-cancelled";
+
+                <div class="col-lg-6 col-12 mb-4">
+                    <div class="card ticket-card shadow-sm h-100 @opacityClass">
+
+                        <div class="d-flex h-100">
+
+                            <!-- DATE -->
+                            <div class="date-box @statusBg p-3">
+                                <div class="day">@item.Event.Date.ToString("dd")</div>
+                                <div class="month">@item.Event.Date.ToString("MMM")</div>
+                                <small>@item.Event.Date.ToString("yyyy")</small>
+                            </div>
+
+                            <!-- CONTENT -->
+                            <div class="card-body d-flex flex-column justify-content-between">
+
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <h5 class="fw-bold mb-1">@item.Event.Title</h5>
+
+                                        <span class="badge @statusBg bg-opacity-10 @badgeTextColor rounded-pill px-3">
+                                            @statusText
+                                        </span>
+                                    </div>
+
+                                    <div class="text-muted small mt-2">
+                                        <p class="mb-1">
+                                            <i class="far fa-clock text-primary me-2"></i>
+                                            @item.Event.StartTime
+                                        </p>
+                                        <p class="mb-0">
+                                            <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                            @item.Event.Location
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="text-end mt-3">
+                                    <a asp-controller="Student"
+                                       asp-action="BookEvent"
+                                       asp-route-eventId="@item.EventId"
+                                       class="btn btn-outline-dark btn-sm rounded-pill px-3">
+                                        التفاصيل وإدارة الحجز
+                                        <i class="fas fa-arrow-left ms-1"></i>
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
