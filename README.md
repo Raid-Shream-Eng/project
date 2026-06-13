@@ -422,10 +422,24 @@ This project is submitted as an academic graduation project. If you plan to make
 
 ---
 
-## Author
+## Authors
 
-**Raid Shream**
+### Raid Shream
 
-Computer Science Graduate  
-GitHub: [Raid-Shream-Eng](https://github.com/Raid-Shream-Eng)  
+Computer Science Graduate
+
+GitHub: [Raid-Shream-Eng](https://github.com/Raid-Shream-Eng)
 LinkedIn: [Raid M. Shream](https://www.linkedin.com/in/raid-m-shream-9203233a2/)
+Email: [raidshreamdev@gmail.com](mailto:raidshreamdev@gmail.com)
+
+### Adham Abuhager
+
+Full Stack Developer | .NET Core & MERN Stack
+
+GitHub: [abuhager](https://github.com/abuhager)
+LinkedIn: [Adham Abuhager](https://www.linkedin.com/in/adham-abuhager/)
+Portfolio: [my-portfolio-five-azure-69.vercel.app](https://my-portfolio-five-azure-69.vercel.app/)
+Email: [abuhager360@gmail.com](mailto:abuhager360@gmail.com)
+
+---
+
