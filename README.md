@@ -1,5 +1,6 @@
 # ZUJ Events Hub
 
+
 Graduation project: a university event management web application built with ASP.NET Core MVC.
 
 ZUJ Events Hub helps university administrators publish and manage events, while students can browse events, book seats, cancel bookings, and track their reservations. The project focuses on event capacity control, role-based access, student registration flow, and a simple administrative dashboard.
